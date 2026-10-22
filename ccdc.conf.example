@@ -1,0 +1,104 @@
+# ccdc.conf - answers for non-interactive runs (copy to ccdc.conf and edit)
+# Format: KEY=value, one per line. Whole-line # comments only. Values may be quoted.
+# The file is PARSED, never sourced: only CCDC_* and NEED_* keys are read.
+# Precedence: environment variable > this file > built-in default.
+# Searched in order: $CCDC_CONF, ./ccdc.conf, <toolkit dir>/ccdc.conf, /etc/ccdc/ccdc.conf
+# (or pass --config FILE). yes/no values also accept y/n, true/false, 1/0, on/off.
+
+# ---- mode -------------------------------------------------------------
+# a config alone does not switch modes; set this or pass --auto
+CCDC_NONINTERACTIVE=yes
+# where everything is written (default: <root's home>/ccdc)
+#CCDC_HOME=/root/ccdc
+
+# ---- README: what does this box need? (all scripts) -------------------
+NEED_SSH=yes
+NEED_WEB=yes
+NEED_FTP=no
+NEED_MYSQL=yes
+NEED_POSTGRES=no
+NEED_PHP=yes
+NEED_SAMBA=no
+NEED_DNS=no
+NEED_MAIL=no
+
+# ---- authorized users (passwords.sh, 03, 04) --------------------------
+# either files (one name per line, # comments ok) ...
+#CCDC_USERS_FILE=/root/toolkit/users.txt
+#CCDC_ADMINS_FILE=/root/toolkit/admin.txt
+# ... or inline lists (users.txt + admin.txt next to the scripts also work)
+#CCDC_AUTHORIZED_USERS=alice bob carol
+#CCDC_ADMINS=alice
+
+# ---- enumeration.sh / 07_discovery.sh ---------------------------------
+CCDC_RUN_NMAP=no
+CCDC_NMAP_BACKGROUND=yes
+CCDC_NMAP_TARGETS=127.0.0.1
+CCDC_DISCOVERY_NMAP=no
+# extra ports you expect to be listening (not flagged by the IOC hunt)
+#CCDC_EXPECTED_PORTS=8080 9090
+
+# ---- passwords.sh (staging only - apply is ALWAYS a separate step) ----
+CCDC_LOCK_UNAUTHORIZED=no
+CCDC_LOCK_EMPTY_PASSWORDS=yes
+CCDC_SERVICE_ACCOUNTS_NOLOGIN=no
+# "all" = every normal user except the operator, or a space-separated list; empty = stage nothing
+CCDC_STAGE_USERS=
+CCDC_PW_SERVICE=local login
+
+# ---- 01_initial_access.sh ---------------------------------------------
+CCDC_RUN_UPDATES=yes
+CCDC_BACKUP_LARGE_VARLOG=no
+CCDC_DISABLE_UNNEEDED=no
+CCDC_SSH_DISABLE_ROOT_LOGIN=yes
+CCDC_SAMBA_DISABLE_GUEST=no
+CCDC_FTP_WRITE_ENABLE=no
+
+# ---- 02_execution.sh --------------------------------------------------
+CCDC_REMOVE_BAD_PACKAGES=yes
+CCDC_STRIP_DANGEROUS_SUID=yes
+CCDC_FIX_WORLD_WRITABLE=no
+CCDC_TMP_NOEXEC=no
+
+# ---- 03_persistence.sh ------------------------------------------------
+CCDC_RECENT_DAYS=7
+CCDC_CRON_LOCKDOWN=no
+#CCDC_CRON_ALLOW_USERS=alice
+# none | unauthorized | all
+CCDC_QUARANTINE_AUTHKEYS=none
+CCDC_SSH_ALLOWUSERS=no
+
+# ---- 04_privilege_escalation.sh ---------------------------------------
+# only consulted when you are logged in directly as root (no sudo)
+CCDC_LOCK_ROOT=no
+CCDC_LOCK_UID0_ROGUES=yes
+CCDC_REMOVE_NONADMIN_FROM_SUDO=yes
+CCDC_SUDOERS_FORCE=no
+
+# ---- 05_defense_evasion_logging.sh ------------------------------------
+CCDC_JOURNAL_PERSISTENT=yes
+CCDC_LOGROTATE_KEEP=12
+CCDC_INSTALL_AUDITD=no
+#CCDC_INTEGRITY_EXTRA=/var/www/html/index.php /etc/nginx/nginx.conf
+
+# ---- 08_lateral_movement.sh (ingress) ---------------------------------
+#CCDC_FW_BACKEND=nft
+CCDC_ALLOW_PING=yes
+CCDC_KEEP_SSH_FOR_ADMIN=yes
+CCDC_KEEP_FORWARDING=yes
+CCDC_STOP_OTHER_FIREWALLS=yes
+CCDC_MYSQL_REMOTE=no
+CCDC_POSTGRES_REMOTE=no
+#CCDC_EXTRA_TCP_IN=8080,8443
+#CCDC_EXTRA_UDP_IN=161
+#CCDC_FTP_PASV_RANGE=40000:40100
+
+# ---- 09_c2_and_exfil.sh (egress) --------------------------------------
+# baseline egress is tcp 53/80/443 + udp 53/123 (+ tcp 25/587 if NEED_MAIL)
+#CCDC_EXTRA_TCP_OUT=389,636,88,3306
+#CCDC_EXTRA_UDP_OUT=88
+
+# ---- 10_impact_monitoring.sh ------------------------------------------
+# empty = derived from NEED_* answers and installed units
+#CCDC_WATCH_SERVICES=sshd apache2 mariadb
+CCDC_REFRESH_BASELINE=yes
